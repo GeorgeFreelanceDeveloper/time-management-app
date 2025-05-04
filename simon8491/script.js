@@ -7,9 +7,8 @@ function apiListTasks() {
     {
         method: 'GET',
         headers: { Authorization: apikey}
-        }
-    )
-    .then(resp => {
+    }
+    ).then(resp => {
         if (!resp.ok) {
             alert('An error occurred! Open devtools and the Network tab.');
         }
@@ -84,7 +83,7 @@ function apiCreateOperationOfTask(taskId, description) {
         {
             method: 'POST',
             headers: { Authorization: apikey, 'Content-Type': 'application/json' },
-            body: JSON.stringify({description: description, reqTime: 0})
+            body: JSON.stringify({description: description, timeSpent: 0})
         }
     ).then(resp => {
         if (!resp.ok) {
@@ -94,13 +93,13 @@ function apiCreateOperationOfTask(taskId, description) {
     });
 }
 
-function apiUpdateOperation(operationId, description, reqTime) {
+function apiUpdateOperation(operationId, description, reqTime){
     return fetch(
         apihost + '/api/operations/' + operationId,
         {
             method: 'PUT',
             headers: { Authorization: apikey, 'Content-Type': 'application/json' },
-            body: JSON.stringify({description: description, reqTime: reqTime})
+            body: JSON.stringify({description: description, timeSpent: reqTime})
         }
     ).then(resp => {
         if (!resp.ok) {
@@ -180,7 +179,8 @@ function renderTask(taskId, title, description, status) {
 
     apiOperationsOfTask(taskId).then(resp => {
         resp.data.forEach((operation) => {
-            renderOperation(ul, status, operation.id, operation.description, operation.reqTime);
+            renderOperation(ul, status, operation.id, operation.description, operation.timeSpent);
+            console.log('Operation: ' + operation.description);
         });
     });
 
@@ -215,7 +215,7 @@ function renderTask(taskId, title, description, status) {
         form.addEventListener('submit', (event) => {
             event.preventDefault();
             apiCreateOperationOfTask(taskId, descInput.value).then(resp => {
-                renderOperation(ul, status, resp.data.id, resp.data.description, resp.data.reqTime);
+                renderOperation(ul, status, resp.data.id, resp.data.description, resp.data.timeSpent);
             });
         });
     }
@@ -248,10 +248,9 @@ function renderOperation(opsList, status, opsId, opsDesc, reqTime) {
         fifteenMinBtn.addEventListener('click', () => {
             apiUpdateOperation(opsId, opsDesc, reqTime + 15).then(
                 resp => {
-                time.innerText = formatTime(resp.data.reqTime);
-                reqTime = resp.data.reqTime;
+                    time.innerText = formatTime(resp.data.timeSpent);
+                    reqTime = resp.data.timeSpent;
             });
-            localStorage.setItem('time', reqTime);
         });
 
         const oneHrBtn = document.createElement('button');
@@ -262,10 +261,9 @@ function renderOperation(opsList, status, opsId, opsDesc, reqTime) {
         oneHrBtn.addEventListener('click', () => {
             apiUpdateOperation(opsId, opsDesc, reqTime + 60).then(
                 resp => {
-                time.innerText = formatTime(resp.data.reqTime);
-                reqTime = resp.data.reqTime;
+                    time.innerText = formatTime(resp.data.timeSpent);
+                    reqTime = resp.data.timeSpent;
             });
-            localStorage.setItem('time', reqTime);
         });
 
         const deleteBtn = document.createElement('button');
@@ -275,7 +273,7 @@ function renderOperation(opsList, status, opsId, opsDesc, reqTime) {
 
         deleteBtn.addEventListener('click', () => {
             apiDeleteOperation(opsId).then(() => {
-                li.parentNode.removeChild(li);
+                li.parentElement.removeChild(li);
             });
         });
     }
@@ -291,13 +289,14 @@ function formatTime(time) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     console.log('DOMContentLoaded');
 
-    apiListTasks().then(response => {
-        response.data.forEach(task => {
-            renderTask(task.id, task.title, task.description, task.status);
-        });
+    apiListTasks().then((response) => {
+        response.data.forEach(
+            (task) => {
+                renderTask(task.id, task.title, task.description, task.status);
+            });
     });
 
     document.querySelector('.js-task-adding-form').addEventListener('submit', (event) => {

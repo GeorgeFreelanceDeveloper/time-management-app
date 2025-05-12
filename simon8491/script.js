@@ -127,7 +127,6 @@ function apiDeleteOperation(operationId) {
 function renderTask(taskId, title, description, status) {
     const section = document.createElement('section');
     section.className = 'card mt-5 shadow-sm';
-    section.innerText = 'Title: ' + title + ', description: ' + description + ', status: ' + status;
     document.querySelector('main').appendChild(section);
 
     const headerDiv = document.createElement('div');

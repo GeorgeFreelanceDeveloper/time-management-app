@@ -6,12 +6,44 @@
   <meta content="ie=edge" http-equiv="X-UA-Compatible">
   <title>ToDo Workshop with TimeTracker</title>
   <script src="https://fer-api.coderslab.pl/bootstrap/js/index.min.js"></script>
-  <script>new CL({
-    title: "ToDo App with TimeTracker",
-    path: ["Python", "Workshop"],
-    fontAwesome: true
-  });</script>
-  <script src="script.js"></script>
+
+  <style>
+    form.d-flex.mt-2.js-task-open-only {
+      justify-content: center;
+      width: 100%;
+      padding: 0 1.25rem 1.25rem 1.25rem;
+      box-sizing: border-box;
+    }
+
+    form.d-flex.mt-2.js-task-open-only input[type="text"] {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right: none;
+      flex-grow: 1;
+    }
+
+    form.d-flex.mt-2.js-task-open-only button {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      background-color: #17a2b8;
+      color: white;
+      border: 1px solid #17a2b8;
+      padding: 0 15px;
+    }
+
+    .time-badge {
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      margin-left: 0.5em;
+      display: inline-block;
+      line-height: 1;
+    }
+  </style>
+
 </head>
 <body>
 <main id="app" class="js-tasks-list container mb-5">
@@ -42,111 +74,14 @@
     </div>
   </div>
 
-  <section class="card mt-5 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <div>
-        <h5>Sample open task</h5>
-        <h6 class="card-subtitle text-muted">It can be closed, deleted, and have new operations added to it</h6>
-      </div>
-      <div>
-        <button class="btn btn-dark btn-sm">Finish</button>
-        <button class="btn btn-outline-danger btn-sm ml-2">Delete</button>
-      </div>
-    </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          In an open task, existing operations can have their times added
-          <span class="badge badge-success badge-pill ml-2">2h 0m</span>
-        </div>
-        <div>
-          <button class="btn btn-outline-success btn-sm mr-2">+15m</button>
-          <button class="btn btn-outline-success btn-sm mr-2">+1h</button>
-          <button class="btn btn-outline-danger btn-sm">Delete</button>
-        </div>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          In an open task, operations can also be deleted
-          <span class="badge badge-success badge-pill ml-2">15m</span>
-        </div>
-        <div>
-          <button class="btn btn-outline-success btn-sm mr-2">+15m</button>
-          <button class="btn btn-outline-success btn-sm mr-2">+1h</button>
-          <button class="btn btn-outline-danger btn-sm">Delete</button>
-        </div>
-      </li>
-    </ul>
-    <div class="card-body">
-      <form>
-        <div class="input-group">
-          <input type="text" placeholder="Operation description" class="form-control" minlength="5">
-          <div class="input-group-append">
-            <button class="btn btn-info">Add</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <section class="card mt-5 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <div>
-        <h5>Sample closed task</h5>
-        <h6 class="card-subtitle text-muted">Closed tasks can only be deleted</h6>
-      </div>
-      <div>
-        <button class="btn btn-outline-danger btn-sm ml-2">Delete</button>
-      </div>
-    </div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          In a closed task, you no longer can add time to an operation
-          <span class="badge badge-success badge-pill ml-2">2h 0m</span>
-        </div>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          In a closed task, operations cannot be deleted
-          <span class="badge badge-success badge-pill ml-2">15m</span>
-        </div>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          There is also no form for adding new operations
-          <span class="badge badge-success badge-pill ml-2">0m</span>
-        </div>
-      </li>
-    </ul>
-  </section>
-
-  <section class="card mt-5 shadow-sm">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <div>
-        <h5>Sample open task without operations</h5>
-        <h6 class="card-subtitle text-muted">This is what a task looks like if it has no operations - or they just haven't loaded yet</h6>
-      </div>
-      <div>
-        <button class="btn btn-dark btn-sm">Finish</button>
-        <button class="btn btn-outline-danger btn-sm ml-2">Delete</button>
-      </div>
-    </div>
-    <ul class="list-group list-group-flush">
-    </ul>
-    <div class="card-body">
-      <form>
-        <div class="input-group">
-          <input type="text" placeholder="Operation description" class="form-control" minlength="5">
-          <div class="input-group-append">
-            <button class="btn btn-info">Add</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </section>
-
-
 </main>
+
+
+<script>new CL({
+  title: "ToDo App with TimeTracker",
+  path: ["Python", "Workshop"],
+  fontAwesome: true
+});</script>
+<script src="script.js"></script>
 </body>
 </html>

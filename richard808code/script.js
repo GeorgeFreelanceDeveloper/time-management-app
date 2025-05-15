@@ -4,7 +4,79 @@ const apihost = 'https://todo-api.coderslab.pl';
 function apiListTasks() {
     return fetch(apihost + '/api/tasks', {
         headers: { Authorization: apikey }
-    }).then(function (resp) {
+    }).then(resp => {
+        if (!resp.ok) {
+            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
+        }
+        return resp.json();
+    });
+}
+
+function apiListOperationsForTask(taskId) {
+    return fetch(`${apihost}/api/tasks/${taskId}/operations`, {
+        headers: { Authorization: apikey }
+    }).then(resp => {
+        if (!resp.ok) {
+            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
+        }
+        return resp.json();
+    });
+}
+
+function apiCreateOperationForTask(taskId, description) {
+    return fetch(`${apihost}/api/tasks/${taskId}/operations`, {
+        headers: { Authorization: apikey, 'Content-Type': 'application/json' },
+        method: 'POST',
+        body: JSON.stringify({ description, timeSpent: 0 })
+    }).then(resp => {
+        if (!resp.ok) {
+            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
+        }
+        return resp.json();
+    });
+}
+
+function apiUpdateOperation(operationId, description, timeSpent) {
+    return fetch(`${apihost}/api/operations/${operationId}`, {
+        headers: { Authorization: apikey, 'Content-Type': 'application/json' },
+        method: 'PUT',
+        body: JSON.stringify({ description, timeSpent })
+    }).then(resp => {
+        if (!resp.ok) {
+            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
+        }
+        return resp.json();
+    });
+}
+
+function apiDeleteTask(taskId) {
+    return fetch(`${apihost}/api/tasks/${taskId}`, {
+        headers: { Authorization: apikey },
+        method: 'DELETE'
+    }).then(resp => {
+        if (!resp.ok) {
+            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
+        }
+    });
+}
+
+function apiDeleteOperation(operationId) {
+    return fetch(`${apihost}/api/operations/${operationId}`, {
+        headers: { Authorization: apikey },
+        method: 'DELETE'
+    }).then(resp => {
+        if (!resp.ok) {
+            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
+        }
+    });
+}
+
+function apiUpdateTask(taskId, title, description, status) {
+    return fetch(`${apihost}/api/tasks/${taskId}`, {
+        headers: { Authorization: apikey, 'Content-Type': 'application/json' },
+        method: 'PUT',
+        body: JSON.stringify({ title, description, status })
+    }).then(resp => {
         if (!resp.ok) {
             alert('An error occurred! Open devtools and the Network tab, and locate the cause');
         }
@@ -47,10 +119,13 @@ function renderTask(taskId, title, description, status) {
     headerRightDiv.appendChild(deleteButton);
 
     const ul = document.createElement('ul');
+    ul.style.padding = '0';
+    ul.style.margin = '0';
+    ul.style.listStyle = 'none';
     section.appendChild(ul);
 
-    apiListOperationsForTask(taskId).then(function (response) {
-        response.data.forEach(function (operation) {
+    apiListOperationsForTask(taskId).then(response => {
+        response.data.forEach(operation => {
             renderOperation(ul, operation.id, status, operation.description, operation.timeSpent);
         });
     });
@@ -68,15 +143,15 @@ function renderTask(taskId, title, description, status) {
 
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
-    submitButton.className = 'btn btn-outline-success ml-2';
-    submitButton.innerText = 'Add Operation';
+    submitButton.innerText = 'Add';
+    submitButton.className = 'btn btn-info ml-0';
     form.appendChild(submitButton);
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         const description = descriptionInput.value.trim();
         if (description !== '') {
-            apiCreateOperationForTask(taskId, description).then(function (response) {
+            apiCreateOperationForTask(taskId, description).then(response => {
                 renderOperation(ul, response.data.id, status, response.data.description, response.data.timeSpent);
                 descriptionInput.value = '';
             });
@@ -84,87 +159,84 @@ function renderTask(taskId, title, description, status) {
     });
 
     finishButton.addEventListener('click', function () {
-        apiUpdateTask(taskId, title, description, 'closed').then(function () {
-            // Remove operations and UI elements for "open" tasks
-            ul.innerHTML = '';  // Clears the list of operations
-            finishButton.remove();
-            form.remove();
-            // Keep delete button
+        apiUpdateTask(taskId, title, description, 'closed').then(() => {
+            const taskSection = finishButton.closest('section');
+            const elementsToRemove = taskSection.querySelectorAll('.js-task-open-only');
+            elementsToRemove.forEach(el => el.remove());
         });
     });
 
     deleteButton.addEventListener('click', function () {
-        apiDeleteTask(taskId).then(function () {
+        apiDeleteTask(taskId).then(() => {
             section.remove();
         });
     });
 
-    // If the task is closed, hide the UI elements related to open tasks
     if (status === 'closed') {
-        finishButton.remove();
-        form.remove();
-        ul.querySelectorAll('.js-task-open-only').forEach(function (element) {
-            element.remove();
-        });
+        const elementsToRemove = section.querySelectorAll('.js-task-open-only');
+        elementsToRemove.forEach(el => el.remove());
     }
-}
-
-function apiListOperationsForTask(taskId) {
-    return fetch(apihost + '/api/tasks/' + taskId + '/operations', {
-        headers: { Authorization: apikey }
-    }).then(function (resp) {
-        if (!resp.ok) {
-            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
-        }
-        return resp.json();
-    });
 }
 
 function renderOperation(ul, operationId, status, description, timeSpent) {
     const li = document.createElement('li');
-    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+    li.style.listStyle = 'none';
+    li.style.padding = '0.5rem 1rem';
+    li.style.display = 'flex';
+    li.style.justifyContent = 'space-between';
+    li.style.alignItems = 'center';
+    li.style.borderBottom = '1px solid #ddd';
     ul.appendChild(li);
 
     const div = document.createElement('div');
-    div.innerText = description + ' ' + formatTime(timeSpent);
+    div.style.flex = '1';
     li.appendChild(div);
+
+    const descriptionSpan = document.createElement('span');
+    descriptionSpan.textContent = description;
+    div.appendChild(descriptionSpan);
+
+    const timeBadge = document.createElement('span');
+    timeBadge.className = 'time-badge ml-2';
+    timeBadge.textContent = formatTime(timeSpent);
+    div.appendChild(timeBadge);
 
     const divButtons = document.createElement('div');
     li.appendChild(divButtons);
 
-    if (status == 'open') {
+    if (status === 'open') {
         const add15Button = document.createElement('button');
-        add15Button.className = 'btn btn-outline-success btn-sm mr-2';
+        add15Button.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only';
         add15Button.innerText = '+15m';
         divButtons.appendChild(add15Button);
 
         const add1hButton = document.createElement('button');
-        add1hButton.className = 'btn btn-outline-success btn-sm mr-2';
+        add1hButton.className = 'btn btn-outline-success btn-sm mr-2 js-task-open-only';
         add1hButton.innerText = '+1h';
         divButtons.appendChild(add1hButton);
 
         add15Button.addEventListener('click', function () {
-            apiUpdateOperation(operationId, description, timeSpent + 15).then(function (response) {
-                div.innerText = response.data.description + ' ' + formatTime(response.data.timeSpent);
+            apiUpdateOperation(operationId, descriptionSpan.textContent, timeSpent + 15).then(response => {
                 timeSpent = response.data.timeSpent;
+                timeBadge.textContent = formatTime(timeSpent);
             });
         });
 
         add1hButton.addEventListener('click', function () {
-            apiUpdateOperation(operationId, description, timeSpent + 60).then(function (response) {
-                div.innerText = response.data.description + ' ' + formatTime(response.data.timeSpent);
+            apiUpdateOperation(operationId, descriptionSpan.textContent, timeSpent + 60).then(response => {
                 timeSpent = response.data.timeSpent;
+                timeBadge.textContent = formatTime(timeSpent);
             });
         });
     }
 
     const deleteButton = document.createElement('button');
-    deleteButton.className = 'btn btn-outline-danger btn-sm';
+    deleteButton.className = 'btn btn-outline-danger btn-sm js-task-open-only';
     deleteButton.innerText = 'Delete';
     divButtons.appendChild(deleteButton);
 
     deleteButton.addEventListener('click', function () {
-        apiDeleteOperation(operationId).then(function () {
+        apiDeleteOperation(operationId).then(() => {
             li.remove();
         });
     });
@@ -174,20 +246,17 @@ function formatTime(timeSpent) {
     const hours = Math.floor(timeSpent / 60);
     const minutes = timeSpent % 60;
     if (hours > 0) {
-        return hours + 'h ' + minutes + 'm';
+        return `${hours}h ${minutes}m`;
     }
-    return minutes + 'm';
+    return `${minutes}m`;
 }
 
-function apiCreateOperationForTask(taskId, description) {
-    return fetch(apihost + '/api/tasks/' + taskId + '/operations', {
+function apiCreateTask(title, description) {
+    return fetch(`${apihost}/api/tasks`, {
         headers: { Authorization: apikey, 'Content-Type': 'application/json' },
         method: 'POST',
-        body: JSON.stringify({
-            description: description,
-            timeSpent: 0
-        })
-    }).then(function (resp) {
+        body: JSON.stringify({ title, description, status: 'open' })
+    }).then(resp => {
         if (!resp.ok) {
             alert('An error occurred! Open devtools and the Network tab, and locate the cause');
         }
@@ -195,88 +264,13 @@ function apiCreateOperationForTask(taskId, description) {
     });
 }
 
-function apiUpdateOperation(operationId, description, timeSpent) {
-    return fetch(apihost + '/api/operations/' + operationId, {
-        headers: { Authorization: apikey, 'Content-Type': 'application/json' },
-        method: 'PUT',
-        body: JSON.stringify({
-            description: description,
-            timeSpent: timeSpent
-        })
-    }).then(function (resp) {
-        if (!resp.ok) {
-            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
-        }
-        return resp.json();
-    });
-}
-
-function apiDeleteTask(taskId) {
-    return fetch(apihost + '/api/tasks/' + taskId, {
-        headers: { Authorization: apikey },
-        method: 'DELETE'
-    }).then(function (resp) {
-        if (!resp.ok) {
-            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
-        }
-    });
-}
-
-function apiDeleteOperation(operationId) {
-    return fetch(apihost + '/api/operations/' + operationId, {
-        headers: { Authorization: apikey },
-        method: 'DELETE'
-    }).then(function (resp) {
-        if (!resp.ok) {
-            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
-        }
-    });
-}
-
-// Add the missing apiUpdateTask function here:
-function apiUpdateTask(taskId, title, description, status) {
-    return fetch(apihost + '/api/tasks/' + taskId, {
-        headers: { Authorization: apikey, 'Content-Type': 'application/json' },
-        method: 'PUT',
-        body: JSON.stringify({
-            title: title,
-            description: description,
-            status: status
-        })
-    }).then(function (resp) {
-        if (!resp.ok) {
-            alert('An error occurred! Open devtools and the Network tab, and locate the cause');
-        }
-        return resp.json();
-    });
-}
-
-apiListTasks().then(function (response) {
-    response.data.forEach(function (task) {
+apiListTasks().then(response => {
+    response.data.forEach(task => {
         renderTask(task.id, task.title, task.description, task.status);
     });
 });
 
-function apiCreateTask(title, description) {
-    return fetch(
-        apihost + '/api/tasks',
-        {
-            headers: { Authorization: apikey, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: title, description: description, status: 'open' }),
-            method: 'POST'
-        }
-    ).then(
-        function (resp) {
-            if (!resp.ok) {
-                alert('An error occurred! Open devtools and the Network tab, and locate the cause');
-            }
-            return resp.json();
-        }
-    )
-}
-
 const form = document.querySelector('form');
-
 form.addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -286,8 +280,8 @@ form.addEventListener('submit', function (event) {
     const title = titleInput.value.trim();
     const description = descriptionInput.value.trim();
 
-    if (title !== '' && description !== '') {
-        apiCreateTask(title, description).then(function (response) {
+    if (title && description) {
+        apiCreateTask(title, description).then(response => {
             renderTask(response.data.id, response.data.title, response.data.description, response.data.status);
             form.reset();
         });

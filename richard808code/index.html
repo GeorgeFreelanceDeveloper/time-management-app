@@ -6,6 +6,44 @@
   <meta content="ie=edge" http-equiv="X-UA-Compatible">
   <title>ToDo Workshop with TimeTracker</title>
   <script src="https://fer-api.coderslab.pl/bootstrap/js/index.min.js"></script>
+
+  <style>
+    form.d-flex.mt-2.js-task-open-only {
+      justify-content: center;
+      width: 100%;
+      padding: 0 1.25rem 1.25rem 1.25rem;
+      box-sizing: border-box;
+    }
+
+    form.d-flex.mt-2.js-task-open-only input[type="text"] {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right: none;
+      flex-grow: 1;
+    }
+
+    form.d-flex.mt-2.js-task-open-only button {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      background-color: #17a2b8;
+      color: white;
+      border: 1px solid #17a2b8;
+      padding: 0 15px;
+    }
+
+    .time-badge {
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      margin-left: 0.5em;
+      display: inline-block;
+      line-height: 1;
+    }
+  </style>
+
 </head>
 <body>
 <main id="app" class="js-tasks-list container mb-5">

@@ -228,18 +228,18 @@ function renderOperation(ul, operationId, status, description, timeSpent) {
                 timeBadge.textContent = formatTime(timeSpent);
             });
         });
-    }
 
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'btn btn-outline-danger btn-sm js-task-open-only';
-    deleteButton.innerText = 'Delete';
-    divButtons.appendChild(deleteButton);
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'btn btn-outline-danger btn-sm js-task-open-only';
+        deleteButton.innerText = 'Delete';
+        divButtons.appendChild(deleteButton);
 
-    deleteButton.addEventListener('click', function () {
-        apiDeleteOperation(operationId).then(() => {
-            li.remove();
+        deleteButton.addEventListener('click', function () {
+            apiDeleteOperation(operationId).then(() => {
+                li.remove();
+            });
         });
-    });
+    }
 }
 
 function formatTime(timeSpent) {
